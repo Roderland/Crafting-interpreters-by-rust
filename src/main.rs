@@ -7,6 +7,7 @@ use std::ops::Index;
 use crate::chunk::{Chunk, OpCode};
 use crate::debug::disassemble_instruction;
 use crate::value::Value::Number;
+use crate::vm::VM;
 
 fn main() {
     let mut chunk = Chunk::new();
@@ -16,4 +17,6 @@ fn main() {
     while offset < chunk.bytecodes.len() {
         offset = disassemble_instruction(&chunk, offset)
     }
+
+    let _ = VM::new().interpret(chunk);
 }

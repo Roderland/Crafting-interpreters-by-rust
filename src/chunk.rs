@@ -6,6 +6,7 @@ pub enum OpCode {
     OpConstant(usize),
 }
 
+#[derive(Clone)]
 pub struct Chunk {
     pub(crate) bytecodes: Vec<OpCode>,
     pub(crate) constants: Vec<Value>,
