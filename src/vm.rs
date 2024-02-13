@@ -1,5 +1,6 @@
 use crate::chunk::{Chunk, OpCode};
 use crate::value::Value;
+use crate::vm::Result::RuntimeError;
 
 pub enum Result {
     Ok,
@@ -11,6 +12,25 @@ pub struct VM {
     pub chunk: Chunk,       // 静态代码块和常量
     pub ip: usize,          // 我们的程序计数器，记录字节码执行到哪了
     pub stack: Vec<Value>,  // 我们的虚拟机栈
+}
+
+macro_rules! binary_op {
+    //                     let b = self.pop();
+    //                     let a = self.pop();
+    //                     let value = match (a, b) {
+    //                         (Value::Number(a), Value::Number(b)) => {
+    //                             let c = Value::Number(a + b);
+    //                             self.push(c);
+    //                         }
+    //                     };
+    ($self:ident, $op:tt) => {{
+        let  b = $self.pop();
+        let  a = $self.pop();
+        match (a, b) {
+            (Value::Number(a), Value::Number(b)) => $self.push(Value::Number(a $op b)),
+            _ => return RuntimeError,
+        };
+    }}
 }
 
 impl VM {
@@ -51,6 +71,17 @@ impl VM {
                     let constant = self.read_constant(index);
                     self.push(constant)
                 },
+                OpCode::OpNegate => {
+                    if let Value::Number(value) = self.pop() {
+                        self.push(Value::Number(-value))
+                    } else {
+                        panic!("never");
+                    }
+                },
+                OpCode::OpAdd => binary_op!(self, +),
+                OpCode::OpSub => binary_op!(self, -),
+                OpCode::OpMul => binary_op!(self, *),
+                OpCode::OpDiv => binary_op!(self, /),
             }
         }
     }

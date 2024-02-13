@@ -14,6 +14,11 @@ pub fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
         OpCode::OpReturn => simple_instruction("OP_RETURN"),
         OpCode::OpConstant(index) =>
             const_instruction("OP_CONSTANT", index, chunk.constants[index]),
+        OpCode::OpNegate => simple_instruction("OP_NEGATE"),
+        OpCode::OpAdd => simple_instruction("OP_ADD"),
+        OpCode::OpSub => simple_instruction("OP_SUB"),
+        OpCode::OpMul => simple_instruction("OP_MUL"),
+        OpCode::OpDiv => simple_instruction("OP_DIV"),
     };
     offset + 1
 }
