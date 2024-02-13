@@ -26,10 +26,31 @@ impl VM {
 
     pub fn run(&mut self) -> Result {
         loop {
+            // rust条件编译，是否要在虚拟机执行期间开启栈&字节码信息的打印
+            #[cfg(feature = "debug_trace_execution")] {
+                use crate::debug::disassemble_instruction;
+
+                // 打印栈信息
+                print!("[STACK]   ");
+                for value in &self.stack {
+                    print!("[{}]", value);
+                }
+                println!();
+
+                // 打印字节码
+                disassemble_instruction(&self.chunk, self.ip);
+            }
+
             let bytecode = self.read_bytecode();
             match bytecode {
-                OpCode::OpReturn => return Result::Ok,
-                OpCode::OpConstant(index) => print!("{:?}", self.read_constant(index)),
+                OpCode::OpReturn => {
+                    print!("程序执行结果：{}", self.pop());
+                    return Result::Ok;
+                },
+                OpCode::OpConstant(index) => {
+                    let constant = self.read_constant(index);
+                    self.push(constant)
+                },
             }
         }
     }
